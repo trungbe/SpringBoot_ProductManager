@@ -38,17 +38,17 @@ public class RestProductController {
     }
 
     @GetMapping("/list")
-//    public ModelAndView getList(@PageableDefault(size = 3) Pageable pageable) {
-//        Page<Product> products = productService.findALl(pageable);
-//        ModelAndView modelAndView = new ModelAndView("listProduct");
-//        modelAndView.addObject("list",products);
-//        return modelAndView;
-//    }
-    public ModelAndView getList() {
+    public ModelAndView getList(@PageableDefault(size = 5) Pageable pageable) {
+        Page<Product> products = productService.findALl(pageable);
         ModelAndView modelAndView = new ModelAndView("listProduct");
-        modelAndView.addObject("list", productService.findALl());
+        modelAndView.addObject("list",products);
         return modelAndView;
     }
+//    public ModelAndView getList() {
+//        ModelAndView modelAndView = new ModelAndView("listProduct");
+//        modelAndView.addObject("list", productService.findALl());
+//        return modelAndView;
+//    }
 
     //create
     @PostMapping()
@@ -78,5 +78,18 @@ public class RestProductController {
     public ResponseEntity<Product> deleteProduct(@PathVariable Long id) {
         productService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    //search name product
+    @PostMapping("/searchName")
+    public ModelAndView searchProductByName(@RequestParam String name) {
+        name = "%" + name + "%";
+        List<Product> products = productService.findByName(name);
+        return new ModelAndView("listProduct", "list", products);
+    }
+    //search category
+    @PostMapping("/searchCategory")
+    public ModelAndView searchProductByCategory(@RequestParam Long id) {
+        List<Product> products = productService.findByCategoryName(id);
+        return new ModelAndView("listProduct", "list", products);
     }
 }

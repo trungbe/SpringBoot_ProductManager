@@ -7,23 +7,19 @@
     <title>Product</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript">
-        // function toDate(dateStr) {
-        //     let parts = dateStr.split("/");
-        //     return new Date(parts[2], parts[1] - 1, parts[0]);
-        // }
         function addProduct() {
             //lay du lieu
             let productName = $('#productName').val();
             let productPrice = $('#price').val();
             let productDescription = $('#description').val();
-            let productDate = new Date($('#date').val());
+            let productDate = $('#date').val();
             let productQuantity = $('#quantity').val();
             let productCategory = $('#category').val();
             let newProduct = {
                 name: productName,
                 price: productPrice,
                 description: productDescription,
-                date: productDate,
+                datetime: productDate,
                 quantity: productQuantity,
                 category: {id: productCategory},
             };
@@ -66,6 +62,7 @@
                     for (let i = 0; i < data.length; i++) {
                         content += getProduct(data[i]);
                     }
+
                     document.getElementById('customers').innerHTML = content;
                 }
             });
@@ -73,15 +70,16 @@
 
         function getProduct(product) {
             return `<tr>` +
-                `<td >${product.name}</td>` +
+                `<td>${product.name}</td>` +
                 `<td>${product.price}</td>` +
                 `<td>${product.description}</td>` +
-                `<td>${product.dateTime}</td>` +
+                `<td>${product.datetime}</td>` +
                 `<td>${product.quantity}</td>` +
                 `<td>${product.category.name}</td>` +
                 `<td><a class="editProduct" href="${product.id}">Edit</a></td>` +
                 `<td><a class="deleteProduct" href="${product.id}" onclick="deleteProduct($(this))">Delete</a></td>` +
-                `</tr>`;
+                `</tr>`
+                ;
         }
 
         function deleteProduct(a) {
@@ -104,6 +102,19 @@
 <body>
 <form action="/category/list">
     <input style="background-color: red" type="submit" value="Show Category">
+</form>
+<form action="/products/searchName" method="post">
+    Search by first name:
+    <input name="name" type="text" placeholder="Input name search"/>
+    <input type="submit" value="Search"/>
+</form>
+<form action="/products/searchCategory" th:method="post">
+    <select th:name="id">
+        <th:block th:each="c:${categories}">
+            <option th:value="${c.id}" th:text="${c.name}"></option>
+        </th:block>
+    </select>
+    <input type="submit" value="Search">
 </form>
 <form id="addProduct">
     <table>
@@ -158,6 +169,11 @@
                th:href="${product.getId()}">Delete</a></td>
     </tr>
 </table>
+<div>
+    <a th:href="@{'/products/list'(page=${list.number - 1})}" th:if="${list.hasPrevious()}">Previous</a>
+    <span th:text="${list.number + 1}"></span>/<span th:text="${list.totalPages}"></span>
+    <a th:href="@{'/products/list'(page=${list.number + 1})}" th:if="${list.hasNext()}">Next</a>
+</div>
 <footer th:replace="/layout :: footer"></footer>
 
 </body>

@@ -28,7 +28,7 @@ public class Product {
     @NotEmpty(message = "Please fill out description")
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone="Asia/Hanoi")
+//    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone="Asia/Hanoi")
     private LocalDateTime datetime;
 
     @Min(value = 1, message = "Please fill out minimum 1 quantity")
