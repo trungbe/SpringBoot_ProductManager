@@ -30,6 +30,10 @@ public class RestProductController {
     public List<Category> categories() {
         return categoryService.findALl();
     }
+    @ModelAttribute("category")
+    public Category category() {
+        return new Category();
+    }
 
     //show
     @GetMapping()

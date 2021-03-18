@@ -34,13 +34,13 @@
                 //ten API
                 url: "/products",
                 //xu li khi thanh cong
-                success: createProduct
+                success: successHandler
             });
             // chan su kien mac dinh cua the
             event.preventDefault();
         }
 
-        function createProduct() {
+        function successHandler() {
             $.ajax({
                 type: "GET",
                 //tên API
@@ -62,7 +62,6 @@
                     for (let i = 0; i < data.length; i++) {
                         content += getProduct(data[i]);
                     }
-
                     document.getElementById('customers').innerHTML = content;
                 }
             });
@@ -76,11 +75,61 @@
                 `<td>${product.datetime}</td>` +
                 `<td>${product.quantity}</td>` +
                 `<td>${product.category.name}</td>` +
-                `<td><a class="editProduct" href="${product.id}">Edit</a></td>` +
+                `<td><a class="editProduct" data-bs-toggle="modal" data-bs-target="#exampleModal" href="${product.id}" onclick="getProductById($(this))">Edit</a></td>` +
                 `<td><a class="deleteProduct" href="${product.id}" onclick="deleteProduct($(this))">Delete</a></td>` +
                 `</tr>`
                 ;
         }
+
+        function getProductById(a) {
+            let id = a.attr("href");
+            console.log(id)
+            $.ajax({
+                type: "GET",
+                url: "/products/" + id,
+                success: function (data) {
+                    document.getElementById('updateName').value = data.name;
+                    document.getElementById('updatePrice').value = data.price;
+                    document.getElementById('updateDescription').value = data.description;
+                    document.getElementById('updateDate').value = data.datetime;
+                    document.getElementById('updateQuantity').value = data.quantity;
+                    document.getElementById('updateId').value = id;
+                    document.getElementById('updateCategoryId').value = data.category.name;
+
+                }
+            })
+            event.preventDefault();
+        }
+
+        function updateProduct() {
+            let id = $('#updateId').val();
+            let name = $('#updateName').val();
+            let price = $('#updatePrice').val();
+            let description = $('#updateDescription').val();
+            let date = $('#updateDate').val();
+            let quantity = $('#updateQuantity').val();
+            let category = $('#updateCategoryId').val();
+            let editProduct = {
+                name: name,
+                price: price,
+                description: description,
+                datetime: date,
+                quantity: quantity,
+                category: {id: category},
+            }
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "PUT",
+                url: "/products/" + id,
+                data: JSON.stringify(editProduct),
+                success: successHandler,
+            })
+            event.preventDefault();
+        }
+
 
         function deleteProduct(a) {
             //chặn sự kiện mặc định của thẻ
@@ -145,6 +194,57 @@
     </form>
 
 </form>
+<div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:object="${category}">
+                        <div class="mb-3">
+                            <label for="updateName" class="col-form-label">Name</label>
+                            <input class="form-control" id="updateName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="updatePrice" class="col-form-label">Price</label>
+                            <input type="text" class="form-control" id="updatePrice">
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateDescription" class="col-form-label">Description</label>
+                            <input class="form-control" id="updateDescription">
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateDate" class="col-form-label">Date</label>
+                            <input class="form-control" id="updateDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateQuantity" class="col-form-label">Quantity</label>
+                            <input class="form-control" id="updateQuantity">
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Category</label>
+                            <select id="updateCategoryId" th:default="${category.id}">
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <input class="form-control" id="updateId">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="updateProduct()" data-bs-dismiss="modal">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <h1>List Product</h1>
 <table id="customers">
     <tr>
@@ -164,7 +264,8 @@
         <td th:text="${product.datetime}"></td>
         <td th:text="${product.quantity}"></td>
         <td th:text="${product.category.name}"></td>
-        <td><a class="editProduct" th:href="${product.getId()}">Edit</a></td>
+        <td><a class="editProduct" th:href="${product.getId()}" data-bs-toggle="modal" data-bs-target="#exampleModal"
+               onclick="getProductById($(this))">Edit</a></td>
         <td><a class="deleteProduct" onclick="deleteProduct($(this))"
                th:href="${product.getId()}">Delete</a></td>
     </tr>
