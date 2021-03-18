@@ -20,7 +20,6 @@ public class RestCategoryController {
         modelAndView.addObject("listCate", categoryService.findALl());
         return modelAndView;
     }
-
     @GetMapping()
     public ResponseEntity<Iterable<Category>> getAll() {
         return new ResponseEntity<>(categoryService.findALl(), HttpStatus.OK);

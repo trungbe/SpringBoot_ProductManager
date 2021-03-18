@@ -152,6 +152,9 @@
 <form action="/category/list">
     <input style="background-color: red" type="submit" value="Show Category">
 </form>
+<form action="/logout">
+    <input style="background-color: blue" type="submit" value="Logout">
+</form>
 <form action="/products/searchName" method="post">
     Search by first name:
     <input name="name" type="text" placeholder="Input name search"/>
@@ -224,9 +227,9 @@
                             <label for="updateQuantity" class="col-form-label">Quantity</label>
                             <input class="form-control" id="updateQuantity">
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" >
                             <label class="col-form-label">Category</label>
-                            <select id="updateCategoryId" th:default="${category.id}">
+                            <select id="updateCategoryId" th:field="${category.id}">
                                 <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
                             </select>
                         </div>
